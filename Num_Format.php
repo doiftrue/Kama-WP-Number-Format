@@ -5,9 +5,19 @@ namespace Kama\WP;
 /**
  * @see    number_format_i18n()
  *
- * @version 2.0
+ * @version 3.0
  */
 class Num_Format {
+
+	/**
+	 * @return self
+	 */
+	public static function instance(): Num_Format {
+		static $inst;
+		$inst || $inst = new self();
+
+		return $inst;
+	}
 
 	/**
 	 * Format number. Thousands become k: 23 000 > 23k.
@@ -15,16 +25,16 @@ class Num_Format {
 	 * @param float|string $number
 	 * @param int|string   $decimals  Optional. Precision of number of decimal places. Default 0.
 	 *                                Specify string as 'decimal float_round_type': '3 flex', '2 smart', '3 fixed'
-	 *                                to set float round function. {@see _process_unit}.
+	 *                                to set float round function. {@see _human_unit}.
 	 *
 	 * @return string
 	 */
-	public static function human_k( $number, $decimals = 1 ): string {
+	public function human_k( $number, $decimals = 1 ): string {
 
 		static $names;
 		$names || $names = [ '', 'k', 'kk', 'kkk', 'kkkk', 'kkkkk' ];
 
-		return self::_process_unit( $number, $decimals, $names, '%s' );
+		return $this->_human_unit( $number, $decimals, $names, '%s' );
 	}
 
 	/**
@@ -33,16 +43,16 @@ class Num_Format {
 	 * @param float|string $number
 	 * @param int|string   $decimals  Optional. Precision of number of decimal places. Default 0.
 	 *                                Specify string as 'decimal float_round_type': '3 flex', '2 smart', '3 fixed'
-	 *                                to set float round function. {@see _process_unit}.
+	 *                                to set float round function. {@see _human_unit}.
 	 *
 	 * @return string
 	 */
-	public static function human_short( $number, $decimals = 1 ): string {
+	public function human_short( $number, $decimals = 1 ): string {
 
 		static $names;
 		$names || $names = [ '', 'K', 'M', 'B', 'T', 'Q' ];
 
-		return self::_process_unit( $number, $decimals, $names, '%s' );
+		return $this->_human_unit( $number, $decimals, $names, '%s' );
 	}
 
 	/**
@@ -51,11 +61,11 @@ class Num_Format {
 	 * @param int|string $num       Original Number.
 	 * @param int|string $decimals  Optional. Precision of number of decimal places. Default 0.
 	 *                              Specify string as 'decimal float_round_type': '3 flex', '2 smart', '3 fixed'
-	 *                              to set float round function. {@see _process_unit}.
+	 *                              to set float round function. {@see _human_unit}.
 	 *
 	 * @return string
 	 */
-	public static function human_abbr( $number, $decimals = 1 ): string {
+	public function human_abbr( $number, $decimals = 1 ): string {
 
 		static $names;
 		$names || $names = [ '',
@@ -66,7 +76,7 @@ class Num_Format {
 			__( 'квдрлн.', 'hl' ),
 		];
 
-		return self::_process_unit( $number, $decimals, $names, ' %s' );
+		return $this->_human_unit( $number, $decimals, $names, ' %s' );
 	}
 
 	/**
@@ -80,9 +90,9 @@ class Num_Format {
 	 *
 	 * @return string
 	 */
-	private static function _process_unit( $number, $decimals, array $names, string $unit_patt = '' ): string {
+	private function _human_unit( $number, $decimals, array $names, string $unit_patt = '' ): string {
 
-		[ $number, $depth ] = self::_unit_depth( $number );
+		[ $number, $depth ] = self::_human_unit_depth( $number );
 
 		if( ! $number ){
 			return '0';
@@ -95,13 +105,13 @@ class Num_Format {
 		switch( $floats_round_type ){
 
 			case 'fixed':
-				return self::format_fixed( $number, $decimals ) . $unit_suffix;
+				return $this->fixed( $number, $decimals ) . $unit_suffix;
 
 			case 'smart':
-				return self::format_smart( $number, $decimals ) . $unit_suffix;
+				return $this->smart( $number, $decimals ) . $unit_suffix;
 
 			default:
-				return self::format_flex( $number, $decimals ) . $unit_suffix;
+				return $this->flex( $number, $decimals ) . $unit_suffix;
 		}
 
 	}
@@ -116,10 +126,10 @@ class Num_Format {
 	 *
 	 * @return array
 	 */
-	private static function _unit_depth( $number, int $depth = 0 ): array {
+	private static function _human_unit_depth( $number, int $depth = 0 ): array {
 
 		if( $number >= 1000 ){
-			return self::_unit_depth( $number / 1000, ++$depth );
+			return self::_human_unit_depth( $number / 1000, ++$depth );
 		}
 
 		return [ $number, $depth ];
@@ -139,7 +149,7 @@ class Num_Format {
 	 *
 	 * @return string
 	 */
-	public static function format_smart( $number, int $show_decimals = 2 ): string {
+	public function smart( $number, int $show_decimals = 2 ): string {
 
 		if( ! $number ){
 			return '';
@@ -158,7 +168,7 @@ class Num_Format {
 			}
 		}
 
-		return self::format_flex( $number, $decimals );
+		return $this->flex( $number, $decimals );
 	}
 
 	/**
@@ -170,13 +180,13 @@ class Num_Format {
 	 * @return string
 	 * @see number_format_i18n()
 	 */
-	public static function format_flex( $number, int $decimals = 2 ): string {
+	public function flex( $number, int $decimals = 2 ): string {
 
 		if( ! $number ){
 			return '';
 		}
 
-		$number = self::format_fixed( $number, $decimals );
+		$number = $this->fixed( $number, $decimals );
 
 		// 38 020.00 > 38 020
 		// 38 020.00100 > 38 020.001
@@ -199,7 +209,7 @@ class Num_Format {
 	 * @return string
 	 * @see number_format_i18n()
 	 */
-	public static function format_fixed( $number, int $decimals = 2 ): string {
+	public function fixed( $number, int $decimals = 2 ): string {
 
 		if( ! $number ){
 			return '';
@@ -209,3 +219,5 @@ class Num_Format {
 	}
 
 }
+
+
