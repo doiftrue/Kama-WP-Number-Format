@@ -14,6 +14,13 @@ $test = [
 	$format->human_k( 16565404.0000234 ),  // 16,6kk
 	$format->human_k( 254856544564 ),      // 254,9kkk
 	'',
+	$format->human_k( 2.00000231, '2 smart' ), // 2,0000023
+	$format->human_k( 2.00000231, '2 fixed' ), // 2,00
+	$format->human_k( 2.00000231, '2 flex' ),  // 2
+	$format->human_k( 2.231, '3 smart' ),      // 2,23
+	$format->human_k( 2.231, '3 fixed' ),      // 2,23
+	$format->human_k( 2.231, '3 flex' ),       // 2,23
+	'',
 	$format->human_short( 16504.0000234 ), // 16,5K
 	$format->human_short( 254854564 ),     // 254,9M
 	'',
