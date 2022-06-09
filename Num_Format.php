@@ -5,14 +5,14 @@ namespace Kama\WP;
 /**
  * @see    number_format_i18n()
  *
- * @version 3.0
+ * @version 3.1
  */
 class Num_Format {
 
 	/**
 	 * @return self
 	 */
-	public static function instance(): Num_Format {
+	public static function instance(): self {
 		static $inst;
 		$inst || $inst = new self();
 
@@ -118,6 +118,7 @@ class Num_Format {
 
 	/**
 	 * Convert big number to readable format.
+	 * Supports negative numbers.
 	 * Can be used as root function. I.e. wrap it to your
 	 * own function where pass $names and specify desired output.
 	 *
@@ -128,11 +129,14 @@ class Num_Format {
 	 */
 	private static function _human_unit_depth( $number, int $depth = 0 ): array {
 
+		$sign = $number <=> 0;
+		$number = abs( $number );
+
 		if( $number >= 1000 ){
-			return self::_human_unit_depth( $number / 1000, ++$depth );
+			return self::_human_unit_depth( $number * $sign / 1000, ++$depth );
 		}
 
-		return [ $number, $depth ];
+		return [ $number * $sign, $depth ];
 	}
 
 	/**
