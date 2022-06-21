@@ -1,6 +1,6 @@
 <?php
 
-$format = \Kama\WP\Num_Format::instance();
+$format = new \Kama\WP\Num_Format();
 
 $test = [
 	$format->human_abbr( 0 ),              // 0
