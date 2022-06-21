@@ -2,22 +2,24 @@
 
 namespace Kama\WP;
 
+interface Num_Format_Interface {
+
+	public function human_k( $number, $decimals = 1 ): string;
+	public function human_short( $number, $decimals = 1 ): string;
+	public function human_abbr( $number, $decimals = 1 ): string;
+
+	public function smart( $number, int $show_decimals = 2 ): string;
+	public function flex( $number, int $decimals = 2 ): string;
+	public function fixed( $number, int $decimals = 2 ): string;
+}
+
 /**
- * @see    number_format_i18n()
  *
- * @version 3.1
+ * @see number_format_i18n()
+ *
+ * @version 3.2
  */
-class Num_Format {
-
-	/**
-	 * @return self
-	 */
-	public static function instance(): self {
-		static $inst;
-		$inst || $inst = new self();
-
-		return $inst;
-	}
+final class Num_Format implements Num_Format_Interface {
 
 	/**
 	 * Format number. Thousands become k: 23 000 > 23k.
