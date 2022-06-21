@@ -19,7 +19,7 @@ interface Num_Format_Interface {
  *
  * @version 3.2
  */
-final class Num_Format implements Num_Format_Interface {
+class Num_Format implements Num_Format_Interface {
 
 	/**
 	 * Format number. Thousands become k: 23 000 > 23k.
